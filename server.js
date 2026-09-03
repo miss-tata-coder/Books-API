@@ -1,14 +1,12 @@
 const express = require('express');
+const fs = require('fs');
 const app = express();
-app.use(express.json()); // parse JSON bodies
+app.use(express.json());
 
-// In-memory data
-let books = [
-  { id: 1, title: "1984", author: "George Orwell" },
-  { id: 2, title: "The Hobbit", author: "J.R.R. Tolkien" }
-];
+// Load books from JSON file
+let books = JSON.parse(fs.readFileSync('books.json'));
 
-// GET /books → all books
+// GET /books → all books (with optional filter)
 app.get('/books', (req, res) => {
   const { author } = req.query;
   if (author) {
@@ -25,7 +23,7 @@ app.get('/books/:id', (req, res) => {
   res.json(book);
 });
 
-// POST /books → create book
+// POST /books → create book with validation
 app.post('/books', (req, res) => {
   const { title, author } = req.body;
   if (!title || !author || title.trim() === "" || author.trim() === "") {
